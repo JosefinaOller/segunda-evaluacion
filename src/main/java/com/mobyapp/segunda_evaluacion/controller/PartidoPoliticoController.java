@@ -32,7 +32,7 @@ public class PartidoPoliticoController {
         return service.findPartidoPoliticoById(id);
     }
 
-    @DeleteMapping
+    @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deletePartidoPolitico (@PathVariable Long id) {
         service.deletePartidoPolitico(id);
