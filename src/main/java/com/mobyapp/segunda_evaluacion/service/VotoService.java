@@ -17,12 +17,13 @@ public class VotoService  implements IVotoService {
     }
 
     @Override
-    public int countVotosByCandidato(Long idCandidato) { //Preguntar si quieren una lista o consulta individual
-        return 0;
+    public int countVotosByCandidatoId(Long candidatoId) {
+        return repository.countVotosByCandidatoId(candidatoId);
     }
 
     @Override
-    public int countVotosByPartidoPolitico(Long idPartidoPolitico) {
-        return 0;
+    public int countVotosByPartidoId(Long partidoId) {
+        return repository.countVotosByPartidoId(partidoId);
     }
+
 }
