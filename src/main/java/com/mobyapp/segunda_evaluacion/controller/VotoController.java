@@ -24,5 +24,16 @@ public class VotoController {
         return service.registerVoto(voto);
     }
 
-    //Endpoints de countVotos
+    @GetMapping("/candidato/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public int countVotosByCandidatoId (@PathVariable Long id) throws RecursoNoEncontradoException {
+        return service.countVotosByCandidatoId(id);
+    }
+
+    @GetMapping("/partido/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public int countVotosByPartidoId (@PathVariable Long id) throws RecursoNoEncontradoException {
+        return service.countVotosByPartidoId(id);
+    }
+
 }
