@@ -1,5 +1,6 @@
 package com.mobyapp.segunda_evaluacion.controller;
 
+import com.mobyapp.segunda_evaluacion.exception.RecursoNoEncontradoException;
 import com.mobyapp.segunda_evaluacion.model.Candidato;
 import com.mobyapp.segunda_evaluacion.service.ICandidatoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,7 @@ public class CandidatoController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Candidato createCandidato(@RequestBody Candidato candidato) {
+    public Candidato createCandidato(@RequestBody Candidato candidato) throws RecursoNoEncontradoException {
         return service.saveCandidato(candidato);
     }
 
@@ -33,13 +34,13 @@ public class CandidatoController {
 
     @GetMapping("{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Candidato findCandidatoById(@PathVariable Long id) {
+    public Candidato findCandidatoById(@PathVariable Long id) throws RecursoNoEncontradoException {
         return service.findCandidatoById(id);
     }
 
     @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteCandidatoById(@PathVariable Long id) {
+    public void deleteCandidatoById(@PathVariable Long id) throws RecursoNoEncontradoException {
         service.deleteCandidato(id);
     }
 }

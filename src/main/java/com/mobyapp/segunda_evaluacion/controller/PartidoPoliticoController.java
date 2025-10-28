@@ -1,5 +1,6 @@
 package com.mobyapp.segunda_evaluacion.controller;
 
+import com.mobyapp.segunda_evaluacion.exception.RecursoNoEncontradoException;
 import com.mobyapp.segunda_evaluacion.model.PartidoPolitico;
 import com.mobyapp.segunda_evaluacion.service.IPartidoPoliticoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,13 +33,13 @@ public class PartidoPoliticoController {
 
     @GetMapping("{id}")
     @ResponseStatus(HttpStatus.OK)
-    public PartidoPolitico findPartidoPoliticoById(@PathVariable Long id) {
+    public PartidoPolitico findPartidoPoliticoById(@PathVariable Long id) throws RecursoNoEncontradoException {
         return service.findPartidoPoliticoById(id);
     }
 
     @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deletePartidoPolitico (@PathVariable Long id) {
+    public void deletePartidoPolitico (@PathVariable Long id) throws RecursoNoEncontradoException {
         service.deletePartidoPolitico(id);
     }
 

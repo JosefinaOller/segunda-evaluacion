@@ -1,5 +1,6 @@
 package com.mobyapp.segunda_evaluacion.controller;
 
+import com.mobyapp.segunda_evaluacion.exception.RecursoNoEncontradoException;
 import com.mobyapp.segunda_evaluacion.model.Voto;
 import com.mobyapp.segunda_evaluacion.service.IVotoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,7 @@ public class VotoController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Voto registerVoto(@RequestBody Voto voto) {
+    public Voto registerVoto(@RequestBody Voto voto) throws RecursoNoEncontradoException {
         return service.registerVoto(voto);
     }
 
