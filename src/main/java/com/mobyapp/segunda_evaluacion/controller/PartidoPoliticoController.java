@@ -11,8 +11,12 @@ import java.util.List;
 @RequestMapping("/api/partidos")
 public class PartidoPoliticoController {
 
+    private final IPartidoPoliticoService service;
+
     @Autowired
-    private IPartidoPoliticoService service;
+    public PartidoPoliticoController(IPartidoPoliticoService service) {
+        this.service = service;
+    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

@@ -8,8 +8,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class VotoService  implements IVotoService {
 
+    private final IVotoRepository repository;
+
     @Autowired
-    private IVotoRepository repository;
+    public VotoService(IVotoRepository repository) {
+        this.repository = repository;
+    }
 
     @Override
     public Voto registerVoto(Voto voto) {

@@ -10,8 +10,12 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/votos")
 public class VotoController {
 
+    private final IVotoService service;
+
     @Autowired
-    private IVotoService service;
+    public VotoController(IVotoService service) {
+        this.service = service;
+    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

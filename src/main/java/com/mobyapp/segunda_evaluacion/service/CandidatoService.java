@@ -10,8 +10,12 @@ import java.util.List;
 @Service
 public class CandidatoService implements ICandidatoService {
 
+    private final ICandidatoRepository repository;
+
     @Autowired
-    private ICandidatoRepository repository;
+    public CandidatoService(ICandidatoRepository repository) {
+        this.repository = repository;
+    }
 
     @Override
     public Candidato saveCandidato(Candidato candidato) {

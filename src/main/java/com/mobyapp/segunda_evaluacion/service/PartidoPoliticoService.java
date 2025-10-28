@@ -10,8 +10,12 @@ import java.util.List;
 @Service
 public class PartidoPoliticoService implements IPartidoPoliticoService {
 
+    private final IPartidoPoliticoRepository repository;
+
     @Autowired
-    private IPartidoPoliticoRepository repository;
+    public PartidoPoliticoService(IPartidoPoliticoRepository repository) {
+        this.repository = repository;
+    }
 
     @Override
     public PartidoPolitico savePartidoPolitico(PartidoPolitico partido) {

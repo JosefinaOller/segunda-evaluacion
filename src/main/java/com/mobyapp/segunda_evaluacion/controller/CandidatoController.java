@@ -12,8 +12,12 @@ import java.util.List;
 @RequestMapping("/api/candidatos")
 public class CandidatoController {
 
+    private final ICandidatoService service;
+
     @Autowired
-    private ICandidatoService service;
+    public CandidatoController(ICandidatoService service) {
+        this.service = service;
+    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
