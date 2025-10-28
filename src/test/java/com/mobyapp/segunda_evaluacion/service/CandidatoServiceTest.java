@@ -12,13 +12,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.jupiter.api.Assertions.*;;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Pruebas de la capa Service para Candidato")
-public class CandidatoServiceTest {
+class CandidatoServiceTest {
 
     @InjectMocks //Pruebo candidato
     private CandidatoService service;

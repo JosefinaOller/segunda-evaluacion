@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
 @DisplayName("Pruebas de la capa de Repository para Voto")
-public class IVotoRepositoryTest {
+class IVotoRepositoryTest {
     @Autowired
     private IVotoRepository votoRepository;
 

@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Pruebas de la entidad Partido Politico")
-public class PartidoPoliticoTest {
+class PartidoPoliticoTest {
 
     @Test
     @DisplayName("Debe crear la instancia de Partido Politico usando el constructor con los argumentos")

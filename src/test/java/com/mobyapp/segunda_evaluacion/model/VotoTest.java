@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Pruebas de la entidad Voto")
-public class VotoTest {
+class VotoTest {
 
     private final PartidoPolitico partidoPoliticoMock = new PartidoPolitico(1L,"Partido de Libertad","PL");
     private final Candidato candidatoMock = new Candidato(1L,"Lionel Messi",partidoPoliticoMock);

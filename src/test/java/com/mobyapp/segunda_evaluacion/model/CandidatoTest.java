@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Pruebas de la entidad Candidato")
-public class CandidatoTest {
+class CandidatoTest {
 
     private final PartidoPolitico partidoPoliticoMock = new PartidoPolitico(1L,"Partido de Libertad", "PL");
 

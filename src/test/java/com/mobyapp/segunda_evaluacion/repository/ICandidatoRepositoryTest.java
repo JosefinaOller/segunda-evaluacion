@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
 @DisplayName("Pruebas de la capa de Repository para Candidato")
-public class ICandidatoRepositoryTest {
+class ICandidatoRepositoryTest {
     @Autowired
     private ICandidatoRepository candidatoRepository;
 
@@ -26,7 +26,7 @@ public class ICandidatoRepositoryTest {
     private PartidoPolitico partidoPolitico;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         //Arrange --> persistir Partido politico
         partidoPolitico = new PartidoPolitico(null,"Partido de Libertad","PL");
         entityManager.persist(partidoPolitico);

@@ -17,7 +17,7 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Pruebas de la capa Service para Voto")
-public class VotoServiceTest {
+class VotoServiceTest {
 
     @InjectMocks
     private VotoService service;
@@ -31,7 +31,7 @@ public class VotoServiceTest {
     private final Long idExisted = 1L;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         candidatoMock = new Candidato(1L,"Lionel Messi",null);
 
         newVoto = new Voto();

@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 @DisplayName("Pruebas de la capa de Repository para PartidoPolitico")
-public class IPartidoPoliticoRepositoryTest {
+class IPartidoPoliticoRepositoryTest {
 
     @Autowired
     private IPartidoPoliticoRepository partidoPoliticoRepository;
