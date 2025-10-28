@@ -1,6 +1,8 @@
 package com.mobyapp.segunda_evaluacion.service;
 
+import com.mobyapp.segunda_evaluacion.exception.RecursoNoEncontradoException;
 import com.mobyapp.segunda_evaluacion.model.Candidato;
+import com.mobyapp.segunda_evaluacion.model.PartidoPolitico;
 import com.mobyapp.segunda_evaluacion.model.Voto;
 import com.mobyapp.segunda_evaluacion.repository.IVotoRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,8 +13,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDateTime;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -20,43 +22,121 @@ import static org.mockito.Mockito.*;
 class VotoServiceTest {
 
     @InjectMocks
-    private VotoService service;
+    private VotoService votoService;
     @Mock
-    private IVotoRepository repository;
+    private IVotoRepository votoRepository;
+    @Mock
+    private ICandidatoService candidatoService;
+    @Mock
+    private IPartidoPoliticoService partidoPoliticoService;
 
-    private Candidato candidatoMock;
+    private Candidato existingCandidato;
 
     private Voto newVoto;
-    private Voto votoMock;
-    private final Long idExisted = 1L;
+    private Voto existingVoto;
+    private final Long ID_EXISTED = 1L;
+    private final Long ID_NOT_EXISTED = 99L;
+    private final Long PARTIDO_ID_EXISTED = 10L;
+    private final int COUNT_VALUE = 5;
 
     @BeforeEach
     void setUp() {
-        candidatoMock = new Candidato(1L,"Lionel Messi",null);
+        existingCandidato = new Candidato(1L,"Lionel Messi",null);
 
         newVoto = new Voto();
-        newVoto.setCandidato(candidatoMock);
+        newVoto.setCandidato(existingCandidato);
         newVoto.setFechaEmision(LocalDateTime.now());
 
-        votoMock = new Voto();
-        votoMock.setId(idExisted);
-        votoMock.setCandidato(candidatoMock);
-        votoMock.setFechaEmision(newVoto.getFechaEmision());
+        existingVoto = new Voto();
+        existingVoto.setId(ID_EXISTED);
+        existingVoto.setCandidato(existingCandidato);
+        existingVoto.setFechaEmision(newVoto.getFechaEmision());
     }
 
     @Test
-    @DisplayName("Debe registrar un Voto y retornarlo con el ID generado")
-    void registerVoto() {
-        when(repository.save(newVoto)).thenReturn(votoMock);
+    @DisplayName("Debe registrar un Voto si existe el candidato")
+    void registerVoto_CandidatoExists_SavesSuccessfully() throws RecursoNoEncontradoException {
+        when(candidatoService.findCandidatoById(ID_EXISTED)).thenReturn(existingCandidato);
+        when(votoRepository.save(newVoto)).thenReturn(existingVoto);
 
-        Voto result = service.registerVoto(newVoto);
+        Voto result = votoService.registerVoto(newVoto);
 
         assertNotNull(result, "El voto no debe ser nulo.");
-        assertEquals(idExisted, result.getId(), "El ID del voto debe ser el generado por el repositorio.");
-        assertEquals(candidatoMock.getId(), result.getCandidato().getId(), "El Candidato debe ser el mismo.");
+        assertEquals(ID_EXISTED, result.getId(), "El ID del voto debe ser generado.");
 
-        verify(repository, times(1)).save(newVoto);
+        verify(candidatoService, times(1)).findCandidatoById(ID_EXISTED);
+        verify(votoRepository, times(1)).save(newVoto);
     }
 
-    //Tests para countVoto
+    @Test
+    @DisplayName("Debe lanzar RecursoNoEncontradoException si el Candidato no existe al registrar el voto")
+    void registerVoto_CandidatoDoesNotExist_ThrowsException() throws RecursoNoEncontradoException {
+        Candidato invalidCandidato = new Candidato(ID_NOT_EXISTED, "No Existe", null);
+        Voto invalidVoto = new Voto();
+        invalidVoto.setCandidato(invalidCandidato);
+
+        when(candidatoService.findCandidatoById(ID_NOT_EXISTED))
+                .thenThrow(new RecursoNoEncontradoException("Candidato no encontrado"));
+
+        assertThrows(RecursoNoEncontradoException.class, () -> {
+            votoService.registerVoto(invalidVoto);
+        }, "Debe lanzar la excepción cuando el Candidato no existe.");
+
+        verify(votoRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Debe contar votos para un Candidato existente")
+    void countVotosByCandidatoId_CandidatoExists_ReturnsCount() throws RecursoNoEncontradoException {
+        when(candidatoService.findCandidatoById(ID_EXISTED)).thenReturn(existingCandidato);
+        when(votoRepository.countVotosByCandidatoId(ID_EXISTED)).thenReturn(COUNT_VALUE);
+
+        int result = votoService.countVotosByCandidatoId(ID_EXISTED);
+
+        assertEquals(COUNT_VALUE, result, "El conteo de votos debe coincidir.");
+        verify(candidatoService, times(1)).findCandidatoById(ID_EXISTED);
+        verify(votoRepository, times(1)).countVotosByCandidatoId(ID_EXISTED);
+    }
+
+    @Test
+    @DisplayName("Debe lanzar RecursoNoEncontradoException si el Candidato no existe al contar")
+    void countVotosByCandidatoId_CandidatoDoesNotExist_ThrowsException() throws RecursoNoEncontradoException {
+        when(candidatoService.findCandidatoById(ID_NOT_EXISTED))
+                .thenThrow(new RecursoNoEncontradoException("Candidato no encontrado"));
+
+        assertThrows(RecursoNoEncontradoException.class, () -> {
+            votoService.countVotosByCandidatoId(ID_NOT_EXISTED);
+        }, "Debe lanzar la excepción si el Candidato no existe.");
+
+        verify(votoRepository, never()).countVotosByCandidatoId(anyLong());
+    }
+
+    @Test
+    @DisplayName("Debe contar votos para un Partido Político existente")
+    void countVotosByPartidoId_PartidoExists_ReturnsCount() throws RecursoNoEncontradoException {
+        PartidoPolitico existingPartido = new PartidoPolitico(PARTIDO_ID_EXISTED, "Partido de Messi", "PM");
+
+        when(partidoPoliticoService.findPartidoPoliticoById(PARTIDO_ID_EXISTED)).thenReturn(existingPartido);
+        when(votoRepository.countVotosByPartidoId(PARTIDO_ID_EXISTED)).thenReturn(COUNT_VALUE);
+
+        int result = votoService.countVotosByPartidoId(PARTIDO_ID_EXISTED);
+
+        assertEquals(COUNT_VALUE, result, "El conteo de votos debe coincidir.");
+        verify(partidoPoliticoService, times(1)).findPartidoPoliticoById(PARTIDO_ID_EXISTED);
+        verify(votoRepository, times(1)).countVotosByPartidoId(PARTIDO_ID_EXISTED);
+    }
+
+    @Test
+    @DisplayName("Debe lanzar RecursoNoEncontradoException si el Partido Político no existe al contar")
+    void countVotosByPartidoId_PartidoDoesNotExist_ThrowsException() throws RecursoNoEncontradoException {
+        when(partidoPoliticoService.findPartidoPoliticoById(ID_NOT_EXISTED))
+                .thenThrow(new RecursoNoEncontradoException("Partido Político no encontrado"));
+
+        assertThrows(RecursoNoEncontradoException.class, () -> {
+            votoService.countVotosByPartidoId(ID_NOT_EXISTED);
+        }, "Debe lanzar la excepción si el Partido no existe.");
+
+        verify(votoRepository, never()).countVotosByPartidoId(anyLong());
+    }
+
 }

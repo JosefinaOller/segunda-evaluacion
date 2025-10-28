@@ -1,5 +1,6 @@
 package com.mobyapp.segunda_evaluacion.service;
 
+import com.mobyapp.segunda_evaluacion.exception.RecursoNoEncontradoException;
 import com.mobyapp.segunda_evaluacion.model.PartidoPolitico;
 import com.mobyapp.segunda_evaluacion.repository.IPartidoPoliticoRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,60 +28,59 @@ class PartidoPoliticoTest {
     @Mock
     private IPartidoPoliticoRepository repository;
 
-    private PartidoPolitico partidoPoliticoMock;
-    private final Long idExisted = 1L;
-    private final Long idNotExisted = 99L;
+    private PartidoPolitico existingPartidoPolitico;
+    private final Long ID_EXISTED = 1L;
+    private final Long ID_NOT_EXISTED = 99L;
 
     @BeforeEach
     void setUp() {
-        partidoPoliticoMock = new PartidoPolitico(idExisted, "Partido de Messi","PM");
+        existingPartidoPolitico = new PartidoPolitico(ID_EXISTED, "Partido de Messi","PM");
     }
 
     @Test
     @DisplayName("Debe guardar un Partido Politico usando el Repositorio")
-    void savePartidoPolitico(){
+    void savePartidoPolitico_SavesSuccessfully(){
         PartidoPolitico newPartidoPolitico = new PartidoPolitico(null, "Partido nuevo","PN");
 
-        when(repository.save(newPartidoPolitico)).thenReturn(partidoPoliticoMock);
+        when(repository.save(newPartidoPolitico)).thenReturn(existingPartidoPolitico);
 
         PartidoPolitico result = service.savePartidoPolitico(newPartidoPolitico);
 
         assertNotNull(result, "El partido politico no debe ser nulo.");
-        assertEquals(idExisted, result.getId(), "El ID debe coincidir.");
+        assertEquals(ID_EXISTED, result.getId(), "El ID debe coincidir.");
 
         verify(repository, times(1)).save(newPartidoPolitico);
     }
 
     @Test
     @DisplayName("Debe retornar un Partido Politico existente por ID")
-    void findPartidoPoliticoById(){
-        when(repository.findById(idExisted)).thenReturn(Optional.of(partidoPoliticoMock));
+    void findPartidoPoliticoById_ExistingId_ReturnsPartidoPolitico() throws RecursoNoEncontradoException {
+        when(repository.findById(ID_EXISTED)).thenReturn(Optional.of(existingPartidoPolitico));
 
-        PartidoPolitico result = service.findPartidoPoliticoById(idExisted);
+        PartidoPolitico result = service.findPartidoPoliticoById(ID_EXISTED);
 
         assertNotNull(result, "El Partido Politico no debe ser nulo.");
         assertEquals("Partido de Messi", result.getNombre());
 
-        verify(repository, times(1)).findById(idExisted);
+        verify(repository, times(1)).findById(ID_EXISTED);
     }
 
     @Test
-    @DisplayName("Debe retornar null si el Partido Politico no existe")
-    void findPartidoPoliticoByIdNull(){
-        when(repository.findById(idNotExisted)).thenReturn(Optional.empty());
+    @DisplayName("Debe lanzar RecursoNoEncontradoException si el Partido Politico no existe al buscar")
+    void findPartidoPoliticoById_NonExistentId_ThrowsException() throws RecursoNoEncontradoException {
+        when(repository.findById(ID_NOT_EXISTED)).thenReturn(Optional.empty());
 
-        PartidoPolitico result = service.findPartidoPoliticoById(idNotExisted);
+        assertThrows(RecursoNoEncontradoException.class, () -> {service.findPartidoPoliticoById(ID_NOT_EXISTED);
+        }, "Debe lanzar la excepción cuando el Optional está vacío.");
 
-        assertNull(result, "El partido politico debe ser nulo si el ID no existe.");
-
-        verify(repository, times(1)).findById(idNotExisted);
+        verify(repository, times(1)).findById(ID_NOT_EXISTED);
     }
 
     @Test
     @DisplayName("Debe retornar una lista de Partidos Politicos")
-    void findAllPartidosPoliticos(){
+    void getPartidosPoliticos_ReturnsListOfPartidos(){
         PartidoPolitico partidoPolitico2 = new PartidoPolitico(2L, "Partido de Paz", "PP");
-        List<PartidoPolitico> listMock = Arrays.asList(partidoPoliticoMock, partidoPolitico2);
+        List<PartidoPolitico> listMock = Arrays.asList(existingPartidoPolitico, partidoPolitico2);
 
         when(repository.findAll()).thenReturn(listMock);
 
@@ -94,15 +94,27 @@ class PartidoPoliticoTest {
 
     @Test
     @DisplayName("Debe buscar y eliminar un Partido Politico existente por ID")
-    void deletePartidoPoliticoById(){
-        when(repository.findById(idExisted)).thenReturn(Optional.of(partidoPoliticoMock));
+    void deletePartidoPolitico_ExistingId_DeletesSuccessfully() throws RecursoNoEncontradoException {
+        when(repository.findById(ID_EXISTED)).thenReturn(Optional.of(existingPartidoPolitico));
 
-        service.deletePartidoPolitico(idExisted);
+        service.deletePartidoPolitico(ID_EXISTED);
 
-        verify(repository, times(1)).findById(idExisted);
-        verify(repository, times(1)).deleteById(idExisted);
-        //Verifica que nunca se llamó al deleteById con un id que no existe
-        verify(repository, never()).deleteById(idNotExisted);
+        verify(repository, times(1)).findById(ID_EXISTED);
+        verify(repository, times(1)).deleteById(ID_EXISTED);
+        verify(repository, never()).deleteById(ID_NOT_EXISTED);
+    }
+
+    @Test
+    @DisplayName("Debe lanzar RecursoNoEncontradoException si el Partido Politico a eliminar no existe")
+    void deletePartidoPolitico_NonExistentId_ThrowsException() {
+        when(repository.findById(ID_NOT_EXISTED)).thenReturn(Optional.empty());
+
+        assertThrows(RecursoNoEncontradoException.class, () -> {
+            service.deletePartidoPolitico(ID_NOT_EXISTED);
+        }, "Debe lanzar la excepción antes de intentar borrar.");
+
+        verify(repository, never()).deleteById(anyLong());
+        verify(repository, times(1)).findById(ID_NOT_EXISTED);
     }
 
 }

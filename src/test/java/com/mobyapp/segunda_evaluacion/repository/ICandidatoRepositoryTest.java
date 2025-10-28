@@ -21,26 +21,26 @@ class ICandidatoRepositoryTest {
     private ICandidatoRepository candidatoRepository;
 
     @Autowired
-    private TestEntityManager entityManager; //Para preparar un objeto válido en BD
+    private TestEntityManager entityManager;
 
     private PartidoPolitico partidoPolitico;
 
     @BeforeEach
     void setup() {
-        //Arrange --> persistir Partido politico
         partidoPolitico = new PartidoPolitico(null,"Partido de Libertad","PL");
+
         entityManager.persist(partidoPolitico);
-        entityManager.flush(); //Para asegurar la escritura
+
+        entityManager.flush();
     }
 
     @Test
     @DisplayName("Debe guardar un Candidato y resolver su relación ManyToOne con PartidoPolitico")
     void saveCandidato() {
-        //Arrange
         Candidato newCandidato = new Candidato(null,"Lionel Messi",partidoPolitico);
-        //Act
+
         Candidato savedCandidato = candidatoRepository.save(newCandidato);
-        //Assert
+
         assertNotNull(savedCandidato.getId(),"El ID debe ser generado por JPA.");
         assertEquals(partidoPolitico.getId(), savedCandidato.getPartido().getId(), "El ID en el candidato guardado debe coincidir.");
     }

@@ -13,6 +13,6 @@ public interface IVotoRepository extends JpaRepository<Voto,Long> {
     int countVotosByCandidatoId(@Param("candidatoId") Long candidatoId);
 
     @Query("SELECT COUNT(v.id) FROM Voto v WHERE v.candidato.partido.id = :partidoId")
-    int countVotosByPartidoId(@Param("partidoId")Long partidoId);
+    int countVotosByPartidoId(@Param("partidoId") Long partidoId);
 
 }
