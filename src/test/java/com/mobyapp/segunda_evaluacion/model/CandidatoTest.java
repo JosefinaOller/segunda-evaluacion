@@ -7,49 +7,49 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("Pruebas de la entidad Candidato")
 class CandidatoTest {
 
-    private final PartidoPolitico partidoPoliticoMock = new PartidoPolitico(1L,"Partido de Libertad", "PL");
+    private final PartidoPolitico existingPartidoPolitico = new PartidoPolitico(1L,"Partido de Libertad", "PL");
 
     @Test
     @DisplayName("Debe crear la instancia de Candidato usando el constructor con los argumentos")
     void createCandidatoWithAllArgs(){
-        //Arrange
-        Long idExpected = 1L;
-        String nameExpected = "Lionel Messi";
-        //Act
-        Candidato candidato = new Candidato(idExpected,nameExpected,partidoPoliticoMock);
-        //Assert
+
+        Long existingId = 1L;
+        String existingName = "Lionel Messi";
+
+        Candidato candidato = new Candidato(existingId,existingName, existingPartidoPolitico);
+
         assertNotNull(candidato, "Candidato no debe ser nulo");
-        assertEquals(idExpected, candidato.getId(), "El ID debe coincidir.");
-        assertEquals(nameExpected, candidato.getNombreCompleto(), "El nombre debe coincidir.");
-        assertEquals(partidoPoliticoMock, candidato.getPartido(), "El partido debe coincidir.");
+        assertEquals(existingId, candidato.getId(), "El ID debe coincidir.");
+        assertEquals(existingName, candidato.getNombreCompleto(), "El nombre debe coincidir.");
+        assertEquals(existingPartidoPolitico, candidato.getPartido(), "El partido debe coincidir.");
         assertEquals("Partido de Libertad", candidato.getPartido().getNombre(), "Debe acceder al nombre del partido.");
     }
 
     @Test
     @DisplayName("Debe crear la instancia de Candidato usando el constructor vacío")
     void createCandidatoWithNoArgs(){
-        //Arrange
+
         Candidato candidato = new Candidato();
-        Long idExpected = 2L;
-        String nameExpected = "Angel Di Maria";
-        //Act
-        candidato.setId(idExpected);
-        candidato.setNombreCompleto(nameExpected);
-        candidato.setPartido(partidoPoliticoMock);
-        //Asset
+        Long existingId = 2L;
+        String existingName = "Angel Di Maria";
+
+        candidato.setId(existingId);
+        candidato.setNombreCompleto(existingName);
+        candidato.setPartido(existingPartidoPolitico);
+
         assertNotNull(candidato, "Candidato no debe ser nulo");
-        assertEquals(idExpected, candidato.getId(), "El ID seteado debe coincidir.");
-        assertEquals(nameExpected, candidato.getNombreCompleto(), "El nombre seteado debe coincidir.");
-        assertEquals(partidoPoliticoMock, candidato.getPartido(), "El partido debe coincidir.");
+        assertEquals(existingId, candidato.getId(), "El ID seteado debe coincidir.");
+        assertEquals(existingName, candidato.getNombreCompleto(), "El nombre seteado debe coincidir.");
+        assertEquals(existingPartidoPolitico, candidato.getPartido(), "El partido debe coincidir.");
         assertEquals("Partido de Libertad", candidato.getPartido().getNombre(), "El partido no debe ser nulo.");
     }
 
     @Test
     @DisplayName("Debe inicializar el ID como nulo usando el constructor NoArgsConstructor")
     void initializeIdAsNull(){
-        //Arrange
+
         Candidato candidato = new Candidato();
-        //Assert
+
         assertNull(candidato.getId(), "El ID debe ser nulo al usar el constructor vacio. ");
     }
 }

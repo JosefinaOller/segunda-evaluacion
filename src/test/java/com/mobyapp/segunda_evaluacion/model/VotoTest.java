@@ -8,50 +8,50 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("Pruebas de la entidad Voto")
 class VotoTest {
 
-    private final PartidoPolitico partidoPoliticoMock = new PartidoPolitico(1L,"Partido de Libertad","PL");
-    private final Candidato candidatoMock = new Candidato(1L,"Lionel Messi",partidoPoliticoMock);
+    private final PartidoPolitico existingPartidoPolitico = new PartidoPolitico(1L,"Partido de Libertad","PL");
+    private final Candidato existingCandidato = new Candidato(1L,"Lionel Messi", existingPartidoPolitico);
 
     @Test
     @DisplayName("Debe crear la instancia de Voto usando el constructor con los argumentos")
     void createVotoWithAllArgs(){
-        //Arrange
-        Long idExpected = 1L;
-        LocalDateTime fechaEmisionExpected = LocalDateTime.now();
-        //Act
-        Voto voto = new Voto(idExpected,candidatoMock,fechaEmisionExpected);
-        //Assert
+
+        Long existingId = 1L;
+        LocalDateTime existingFechaEmision = LocalDateTime.now();
+
+        Voto voto = new Voto(existingId, existingCandidato,existingFechaEmision);
+
         assertNotNull(voto, "Voto no debe ser nulo");
-        assertEquals(idExpected, voto.getId(), "El ID debe coincidir.");
-        assertEquals(fechaEmisionExpected, voto.getFechaEmision(), "La fecha de emision debe coincidir.");
-        assertEquals(candidatoMock, voto.getCandidato(), "El candidato debe coincidir.");
+        assertEquals(existingId, voto.getId(), "El ID debe coincidir.");
+        assertEquals(existingFechaEmision, voto.getFechaEmision(), "La fecha de emision debe coincidir.");
+        assertEquals(existingCandidato, voto.getCandidato(), "El candidato debe coincidir.");
         assertEquals("Lionel Messi", voto.getCandidato().getNombreCompleto(), "Debe acceder al nombre del candidato.");
     }
 
     @Test
     @DisplayName("Debe crear la instancia de Voto usando el constructor vacío")
     void createVotoWithNoArgs(){
-        //Arrange
+
         Voto voto = new Voto();
-        Long idExpected = 2L;
-        LocalDateTime fechaEmisionExpected = LocalDateTime.now();
-        //Act
-        voto.setId(idExpected);
-        voto.setFechaEmision(fechaEmisionExpected);
-        voto.setCandidato(candidatoMock);
-        //Assert
+        Long existingId = 2L;
+        LocalDateTime existingFechaEmision = LocalDateTime.now();
+
+        voto.setId(existingId);
+        voto.setFechaEmision(existingFechaEmision);
+        voto.setCandidato(existingCandidato);
+
         assertNotNull(voto, "Voto no debe ser nulo");
-        assertEquals(idExpected, voto.getId(), "El ID seteado debe coincidir.");
-        assertEquals(fechaEmisionExpected, voto.getFechaEmision(), "La fecha de emision seteada debe coincidir.");
-        assertEquals(candidatoMock, voto.getCandidato(), "El candidato debe coincidir.");
+        assertEquals(existingId, voto.getId(), "El ID seteado debe coincidir.");
+        assertEquals(existingFechaEmision, voto.getFechaEmision(), "La fecha de emision seteada debe coincidir.");
+        assertEquals(existingCandidato, voto.getCandidato(), "El candidato debe coincidir.");
         assertEquals("Lionel Messi", voto.getCandidato().getNombreCompleto(), "Debe acceder al nombre del candidato.");
     }
 
     @Test
     @DisplayName("Debe inicializar el ID como nulo usando el constructor NoArgsConstructor")
     void initializeIdAsNull(){
-        //Arrange
+
         Voto voto = new Voto();
-        //Assert
+
         assertNull(voto.getId(), "El ID debe ser nulo al usar el constructor vacio. ");
     }
 

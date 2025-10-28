@@ -48,13 +48,13 @@ class ICandidatoRepositoryTest {
     @Test
     @DisplayName("Debe encontrar un Candidato por ID y cargar su PartidoPolitico")
     void findCandidatoById() {
-        //Arrange
+
         Candidato persistedCandidato = new Candidato(null,"Rodrigo de Paul",partidoPolitico);
         entityManager.persistAndFlush(persistedCandidato);
         Long idFound = persistedCandidato.getId();
-        //Act
+
         Optional<Candidato> result = candidatoRepository.findById(idFound);
-        //Assert
+
         assertTrue(result.isPresent(),"Se debe encontrar el candidato.");
         assertEquals("Rodrigo de Paul",result.get().getNombreCompleto());
         assertNotNull(result.get().getPartido(), "El PartidoPolitico no debe ser nulo.");
@@ -64,24 +64,24 @@ class ICandidatoRepositoryTest {
     @Test
     @DisplayName("Debe retornar vacio si el ID no existe")
     void returnEmptyWhenIdNotFound() {
-        //Arrange
+
         Long idNotFound = 99L;
-        //Act
+
         Optional<Candidato> result = candidatoRepository.findById(idNotFound);
-        //Assert
+
         assertTrue(result.isEmpty(), "Debe retornar vacio para un ID que no existe.");
     }
 
     @Test
     @DisplayName("Debe eliminar un Candidato por ID y confirmar su ausencia")
     void deleteCandidatoById() {
-        //Arrange
+
         Candidato candidatoToDelete = new Candidato(null,"Emiliano Martinez", partidoPolitico);
         entityManager.persistAndFlush(candidatoToDelete);
         Long idToDelete = candidatoToDelete.getId();
-        //Act
+
         candidatoRepository.deleteById(idToDelete);
-        //Assert
+
         Optional<Candidato> result = candidatoRepository.findById(idToDelete);
         assertTrue(result.isEmpty(), "El candidato debe haber sido eliminado.");
     }
