@@ -1,5 +1,6 @@
 package com.mobyapp.segunda_evaluacion.controller;
 
+import com.mobyapp.segunda_evaluacion.dto.CandidatoDTO;
 import com.mobyapp.segunda_evaluacion.exception.RecursoDuplicadoException;
 import com.mobyapp.segunda_evaluacion.exception.RecursoNoEncontradoException;
 import com.mobyapp.segunda_evaluacion.model.Candidato;
@@ -37,7 +38,7 @@ public class CandidatoController {
     })
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Candidato createCandidato(@RequestBody Candidato candidato) throws RecursoNoEncontradoException, RecursoDuplicadoException {
+    public CandidatoDTO createCandidato(@RequestBody Candidato candidato) throws RecursoNoEncontradoException, RecursoDuplicadoException {
         return service.saveCandidato(candidato);
     }
 
@@ -48,7 +49,7 @@ public class CandidatoController {
     @ApiResponse(responseCode = "200", description = "Lista de candidatos obtenida exitosamente.")
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<Candidato> getCandidatos() {
+    public List<CandidatoDTO> getCandidatos() {
         return service.getCandidatos();
     }
 
@@ -62,7 +63,7 @@ public class CandidatoController {
     })
     @GetMapping("{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Candidato findCandidatoById(@PathVariable Long id) throws RecursoNoEncontradoException {
+    public CandidatoDTO findCandidatoById(@PathVariable Long id) throws RecursoNoEncontradoException {
         return service.findCandidatoById(id);
     }
 

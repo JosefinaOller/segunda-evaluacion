@@ -1,5 +1,6 @@
 package com.mobyapp.segunda_evaluacion.controller;
 
+import com.mobyapp.segunda_evaluacion.dto.VotoDTO;
 import com.mobyapp.segunda_evaluacion.exception.RecursoNoEncontradoException;
 import com.mobyapp.segunda_evaluacion.model.Voto;
 import com.mobyapp.segunda_evaluacion.service.IVotoService;
@@ -34,7 +35,7 @@ public class VotoController {
     })
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Voto registerVoto(@RequestBody Voto voto) throws RecursoNoEncontradoException {
+    public VotoDTO registerVoto(@RequestBody Voto voto) throws RecursoNoEncontradoException {
         return service.registerVoto(voto);
     }
 

@@ -1,7 +1,9 @@
 package com.mobyapp.segunda_evaluacion.service;
 
+import com.mobyapp.segunda_evaluacion.dto.PartidoPoliticoDTO;
 import com.mobyapp.segunda_evaluacion.exception.RecursoDuplicadoException;
 import com.mobyapp.segunda_evaluacion.exception.RecursoNoEncontradoException;
+import com.mobyapp.segunda_evaluacion.mapper.PartidoPoliticoMapper;
 import com.mobyapp.segunda_evaluacion.model.PartidoPolitico;
 import com.mobyapp.segunda_evaluacion.repository.IPartidoPoliticoRepository;
 import org.slf4j.Logger;
@@ -11,23 +13,27 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class PartidoPoliticoService implements IPartidoPoliticoService {
 
     private final IPartidoPoliticoRepository repository;
+    private final PartidoPoliticoMapper  mapper;
     private static final Logger log = LoggerFactory.getLogger(PartidoPoliticoService.class);
 
     @Autowired
-    public PartidoPoliticoService(IPartidoPoliticoRepository repository) {
+    public PartidoPoliticoService(IPartidoPoliticoRepository repository, PartidoPoliticoMapper mapper) {
         this.repository = repository;
+        this.mapper = mapper;
     }
 
     @Override
-    public PartidoPolitico savePartidoPolitico(PartidoPolitico partido) throws RecursoDuplicadoException {
+    public PartidoPoliticoDTO savePartidoPolitico(PartidoPolitico partido) throws RecursoDuplicadoException {
         validateDuplicity(partido);
-        log.info("Partido Politico guardado correctamente");
-        return repository.save(partido);
+        PartidoPolitico newPartidoPolitico = repository.save(partido);
+        log.info("Partido Politico guardado correctamente con ID {}",  newPartidoPolitico.getId());
+        return mapper.toDTO(newPartidoPolitico);
     }
 
     private void validateDuplicity(PartidoPolitico partido) throws RecursoDuplicadoException {
@@ -39,16 +45,21 @@ public class PartidoPoliticoService implements IPartidoPoliticoService {
     }
 
     @Override
-    public PartidoPolitico findPartidoPoliticoById(Long id) throws RecursoNoEncontradoException {
-        return repository.findById(id).orElseThrow(() -> {
-            log.warn("No se encontró el partido politico con ID: {}", id);
-            return new RecursoNoEncontradoException("El partido politico con ID " + id + " no existe");
-        });
+    public PartidoPoliticoDTO findPartidoPoliticoById(Long id) throws RecursoNoEncontradoException {
+        return mapper.toDTO(getPartidoPolitico(id));
     }
 
     @Override
-    public List<PartidoPolitico> getPartidosPoliticos() {
-        return repository.findAll();
+    public PartidoPolitico findPartidoPoliticoEntityById(Long id) throws RecursoNoEncontradoException {
+        return getPartidoPolitico(id);
+    }
+
+    @Override
+    public List<PartidoPoliticoDTO> getPartidosPoliticos() {
+        return repository.findAll()
+                .stream()
+                .map(mapper::toDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -56,5 +67,12 @@ public class PartidoPoliticoService implements IPartidoPoliticoService {
         findPartidoPoliticoById(id);
         log.info("Eliminando partido politico con ID: {}", id);
         repository.deleteById(id);
+    }
+
+    private PartidoPolitico getPartidoPolitico(Long id) throws RecursoNoEncontradoException {
+        return repository.findById(id).orElseThrow(() -> {
+            log.warn("No se encontró el partido politico con ID: {}", id);
+            return new RecursoNoEncontradoException("El partido politico con ID " + id + " no existe");
+        });
     }
 }
