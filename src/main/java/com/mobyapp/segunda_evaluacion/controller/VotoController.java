@@ -5,9 +5,12 @@ import com.mobyapp.segunda_evaluacion.exception.RecursoNoEncontradoException;
 import com.mobyapp.segunda_evaluacion.model.Voto;
 import com.mobyapp.segunda_evaluacion.service.IVotoService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -29,13 +32,15 @@ public class VotoController {
             description = "Registra un voto asignado a un candidato. Retorna 404 si el candidato no existe."
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Voto registrado exitosamente."),
+            @ApiResponse(responseCode = "201", description = "Voto registrado exitosamente.",
+                    content = @Content(schema = @Schema(implementation = VotoDTO.class))),
             @ApiResponse(responseCode = "404", description = "Candidato asociado al voto no encontrado."),
             @ApiResponse(responseCode = "400", description = "Solicitud inválida (ej. cuerpo vacío).")
     })
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public VotoDTO registerVoto(@RequestBody Voto voto) throws RecursoNoEncontradoException {
+    public VotoDTO registerVoto(@Valid @RequestBody Voto voto) throws RecursoNoEncontradoException {
         return service.registerVoto(voto);
     }
 

@@ -6,9 +6,13 @@ import com.mobyapp.segunda_evaluacion.exception.RecursoNoEncontradoException;
 import com.mobyapp.segunda_evaluacion.model.PartidoPolitico;
 import com.mobyapp.segunda_evaluacion.service.IPartidoPoliticoService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -28,16 +32,19 @@ public class PartidoPoliticoController {
 
     @Operation(
             summary = "Registrar un nuevo Partido Político",
-            description = "Crea un nuevo partido con un nombre y una sigla únicos."
+            description = "Crea un nuevo partido con un nombre y una sigla únicos. Retorna 409 si el nombre o la sigla ya están en uso."
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Partido creado exitosamente."),
+            @ApiResponse(responseCode = "201", description = "Partido creado exitosamente.",
+                    content = @Content(schema = @Schema(implementation = PartidoPoliticoDTO.class))),
+            @ApiResponse(responseCode = "409", description = "Partido duplicado (ya existe un partido con el mismo nombre o sigla)."), // Agregado para RecursoDuplicadoException
             @ApiResponse(responseCode = "400", description = "Solicitud inválida (ej. datos faltantes o incorrectos).")
     })
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @SuppressWarnings("java:S1130")
-    public PartidoPoliticoDTO createPartidoPolitico (@RequestBody PartidoPolitico partidoPolitico) throws RecursoDuplicadoException {
+    public PartidoPoliticoDTO createPartidoPolitico (@Valid @RequestBody PartidoPolitico partidoPolitico) throws RecursoDuplicadoException {
         // Tuve que ignorar la warning de Sonarqube: Se mantiene 'throws RecursoDuplicadoException' por requisito del compilador
         // (Checked Exception). El error S1130 es un falso positivo, ya que la excepción es manejada
         // globalmente por el @RestControllerAdvice, cumpliendo con la arquitectura REST/Spring.
@@ -49,8 +56,10 @@ public class PartidoPoliticoController {
             description = "Retorna una lista de todos los partidos políticos registrados en el sistema."
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Lista de partidos obtenida exitosamente.")
+            @ApiResponse(responseCode = "200", description = "Lista de partidos obtenida exitosamente.",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = PartidoPoliticoDTO.class))))
     })
+
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<PartidoPoliticoDTO> findAllPartidoPolitico() {
@@ -62,9 +71,11 @@ public class PartidoPoliticoController {
             description = "Busca un partido por su identificador único."
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Partido encontrado."),
+            @ApiResponse(responseCode = "200", description = "Partido encontrado.",
+                    content = @Content(schema = @Schema(implementation = PartidoPoliticoDTO.class))),
             @ApiResponse(responseCode = "404", description = "Partido no encontrado con el ID proporcionado.")
     })
+
     @GetMapping("{id}")
     @ResponseStatus(HttpStatus.OK)
     public PartidoPoliticoDTO findPartidoPoliticoById(@PathVariable Long id) throws RecursoNoEncontradoException {
@@ -79,6 +90,7 @@ public class PartidoPoliticoController {
             @ApiResponse(responseCode = "204", description = "Partido eliminado exitosamente (No Content)."),
             @ApiResponse(responseCode = "404", description = "Partido no encontrado con el ID proporcionado.")
     })
+
     @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deletePartidoPolitico (@PathVariable Long id) throws RecursoNoEncontradoException {

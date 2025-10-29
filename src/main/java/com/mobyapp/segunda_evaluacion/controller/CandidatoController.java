@@ -6,13 +6,16 @@ import com.mobyapp.segunda_evaluacion.exception.RecursoNoEncontradoException;
 import com.mobyapp.segunda_evaluacion.model.Candidato;
 import com.mobyapp.segunda_evaluacion.service.ICandidatoService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -29,16 +32,19 @@ public class CandidatoController {
 
     @Operation(
             summary = "Crear un nuevo candidato",
-            description = "Registra un nuevo candidato y lo asocia a un partido político existente. Retorna 404 si el partido no existe."
+            description = "Registra un nuevo candidato y lo asocia a un partido político existente. Retorna 404 si el partido no existe o 409 si ya existe un candidato con los mismos datos (por ejemplo, DNI)."
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Candidato creado exitosamente."),
+            @ApiResponse(responseCode = "201", description = "Candidato creado exitosamente.",
+                    content = @Content(schema = @Schema(implementation = CandidatoDTO.class))),
             @ApiResponse(responseCode = "404", description = "Partido Político no encontrado para el candidato."),
+            @ApiResponse(responseCode = "409", description = "Candidato duplicado (por ejemplo, ya existe un DNI registrado)."), // Agregado para RecursoDuplicadoException
             @ApiResponse(responseCode = "400", description = "Datos de candidato inválidos.")
     })
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CandidatoDTO createCandidato(@RequestBody Candidato candidato) throws RecursoNoEncontradoException, RecursoDuplicadoException {
+    public CandidatoDTO createCandidato(@Valid @RequestBody Candidato candidato) throws RecursoNoEncontradoException, RecursoDuplicadoException {
         return service.saveCandidato(candidato);
     }
 
@@ -46,7 +52,9 @@ public class CandidatoController {
             summary = "Obtener todos los candidatos",
             description = "Retorna una lista de todos los candidatos registrados en el sistema."
     )
-    @ApiResponse(responseCode = "200", description = "Lista de candidatos obtenida exitosamente.")
+    @ApiResponse(responseCode = "200", description = "Lista de candidatos obtenida exitosamente.",
+            content = @Content(array = @ArraySchema(schema = @Schema(implementation = CandidatoDTO.class))))
+
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<CandidatoDTO> getCandidatos() {
@@ -58,9 +66,11 @@ public class CandidatoController {
             description = "Retorna un candidato específico por su ID."
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Candidato encontrado exitosamente."),
+            @ApiResponse(responseCode = "200", description = "Candidato encontrado exitosamente.",
+                    content = @Content(schema = @Schema(implementation = CandidatoDTO.class))),
             @ApiResponse(responseCode = "404", description = "Candidato no encontrado (ID inexistente).")
     })
+
     @GetMapping("{id}")
     @ResponseStatus(HttpStatus.OK)
     public CandidatoDTO findCandidatoById(@PathVariable Long id) throws RecursoNoEncontradoException {
@@ -75,6 +85,7 @@ public class CandidatoController {
             @ApiResponse(responseCode = "204", description = "Candidato eliminado exitosamente (No Content)."),
             @ApiResponse(responseCode = "404", description = "Candidato no encontrado con el ID proporcionado.")
     })
+
     @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCandidatoById(@PathVariable Long id) throws RecursoNoEncontradoException {
