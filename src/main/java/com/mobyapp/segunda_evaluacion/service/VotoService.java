@@ -3,14 +3,11 @@ package com.mobyapp.segunda_evaluacion.service;
 import com.mobyapp.segunda_evaluacion.exception.RecursoNoEncontradoException;
 import com.mobyapp.segunda_evaluacion.model.Candidato;
 import com.mobyapp.segunda_evaluacion.model.Voto;
-import com.mobyapp.segunda_evaluacion.repository.ICandidatoRepository;
 import com.mobyapp.segunda_evaluacion.repository.IVotoRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class VotoService  implements IVotoService {

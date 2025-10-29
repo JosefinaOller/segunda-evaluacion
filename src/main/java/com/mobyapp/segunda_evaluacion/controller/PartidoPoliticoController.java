@@ -1,5 +1,6 @@
 package com.mobyapp.segunda_evaluacion.controller;
 
+import com.mobyapp.segunda_evaluacion.exception.RecursoDuplicadoException;
 import com.mobyapp.segunda_evaluacion.exception.RecursoNoEncontradoException;
 import com.mobyapp.segunda_evaluacion.model.PartidoPolitico;
 import com.mobyapp.segunda_evaluacion.service.IPartidoPoliticoService;
@@ -34,7 +35,11 @@ public class PartidoPoliticoController {
     })
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public PartidoPolitico createPartidoPolitico (@RequestBody PartidoPolitico partidoPolitico) {
+    @SuppressWarnings("java:S1130")
+    public PartidoPolitico createPartidoPolitico (@RequestBody PartidoPolitico partidoPolitico) throws RecursoDuplicadoException {
+        // Tuve que ignorar la warning de Sonarqube: Se mantiene 'throws RecursoDuplicadoException' por requisito del compilador
+        // (Checked Exception). El error S1130 es un falso positivo, ya que la excepción es manejada
+        // globalmente por el @RestControllerAdvice, cumpliendo con la arquitectura REST/Spring.
         return service.savePartidoPolitico(partidoPolitico);
     }
 

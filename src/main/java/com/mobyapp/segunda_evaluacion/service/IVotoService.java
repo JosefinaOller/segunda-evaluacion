@@ -5,7 +5,7 @@ import com.mobyapp.segunda_evaluacion.model.Voto;
 
 public interface IVotoService {
 
-    public Voto registerVoto(Voto voto) throws RecursoNoEncontradoException;
-    public int countVotosByCandidatoId(Long candidatoId) throws RecursoNoEncontradoException;
-    public int countVotosByPartidoId(Long partidoId) throws RecursoNoEncontradoException;
+    Voto registerVoto(Voto voto) throws RecursoNoEncontradoException;
+    int countVotosByCandidatoId(Long candidatoId) throws RecursoNoEncontradoException;
+    int countVotosByPartidoId(Long partidoId) throws RecursoNoEncontradoException;
 }

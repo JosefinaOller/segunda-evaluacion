@@ -1,5 +1,6 @@
 package com.mobyapp.segunda_evaluacion.controller;
 
+import com.mobyapp.segunda_evaluacion.exception.RecursoDuplicadoException;
 import com.mobyapp.segunda_evaluacion.exception.RecursoNoEncontradoException;
 import com.mobyapp.segunda_evaluacion.model.Candidato;
 import com.mobyapp.segunda_evaluacion.service.ICandidatoService;
@@ -36,7 +37,7 @@ public class CandidatoController {
     })
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Candidato createCandidato(@RequestBody Candidato candidato) throws RecursoNoEncontradoException {
+    public Candidato createCandidato(@RequestBody Candidato candidato) throws RecursoNoEncontradoException, RecursoDuplicadoException {
         return service.saveCandidato(candidato);
     }
 

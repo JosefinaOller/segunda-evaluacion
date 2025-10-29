@@ -1,5 +1,6 @@
 package com.mobyapp.segunda_evaluacion.service;
 
+import com.mobyapp.segunda_evaluacion.exception.RecursoDuplicadoException;
 import com.mobyapp.segunda_evaluacion.exception.RecursoNoEncontradoException;
 import com.mobyapp.segunda_evaluacion.model.Candidato;
 import com.mobyapp.segunda_evaluacion.model.PartidoPolitico;
@@ -8,8 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CandidatoService implements ICandidatoService {
@@ -25,11 +26,23 @@ public class CandidatoService implements ICandidatoService {
     }
 
     @Override
-    public Candidato saveCandidato(Candidato candidato) throws RecursoNoEncontradoException {
+    public Candidato saveCandidato(Candidato candidato) throws RecursoNoEncontradoException, RecursoDuplicadoException {
+
         PartidoPolitico partido = partidoPoliticoService.findPartidoPoliticoById(candidato.getPartido().getId());
+
         candidato.setPartido(partido);
+        validateDuplicity(candidato,partido);
+
         log.info("Candidato guardado correctamente");
         return candidatoRepository.save(candidato);
+    }
+
+    private void validateDuplicity(Candidato candidato, PartidoPolitico partido) throws RecursoDuplicadoException {
+        Optional<Candidato> existingCandidato = candidatoRepository.findByNombreCompletoAndPartido(candidato.getNombreCompleto(), partido);
+        if (existingCandidato.isPresent()) {
+            log.warn("Intento de guardar candidato duplicado: {} del Partido Politico: {}", candidato.getNombreCompleto(), partido.getNombre());
+            throw new RecursoDuplicadoException("Ya existe un candidato registrado con el nombre " + candidato.getNombreCompleto() + " en el partido " + partido.getNombre());
+        }
     }
 
     @Override
@@ -47,8 +60,9 @@ public class CandidatoService implements ICandidatoService {
 
     @Override
     public void deleteCandidato(Long id) throws RecursoNoEncontradoException {
-        this.findCandidatoById(id);
+        findCandidatoById(id);
         log.info("Eliminando el candidato con ID: {}", id);
         candidatoRepository.deleteById(id);
     }
+
 }
