@@ -10,19 +10,19 @@ El proyecto demuestra el dominio de los siguientes conceptos y tecnologías:
 * **Modelado:** Relaciones `@ManyToOne` (Candidato ↔ Partido, Voto ↔ Candidato)
 * **Testing:** Pruebas unitarias con JUnit 5 y Mockito
 * **Documentación:** Swagger (OpenAPI) y Colección de Postman
-* **Calidad de Código:** Análisis estático con SonarQube
+* **Calidad de Código:** Análisis estático con SonarLint
 
 ---
 
 ## 🚀 Instrucciones de Ejecución
 
-Sigue estos pasos para levantar la aplicación en tu entorno local.
+Sigue estos pasos para levantar la aplicación.
 
 ### 1. Requisitos Previos
 
 * **Java 17** o superior (OpenJDK recomendado)
 * **Maven** (para gestión de dependencias)
-* **SonarQube** (para análisis de calidad)
+* **SonarLint** (para análisis de calidad, en Intellij aparece como SonarQube)
 
 ### 2. Clonar el Repositorio
 
