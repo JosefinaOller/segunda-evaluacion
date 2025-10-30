@@ -3,7 +3,6 @@ package com.mobyapp.segunda_evaluacion.mapper;
 import com.mobyapp.segunda_evaluacion.dto.CandidatoDTO;
 import com.mobyapp.segunda_evaluacion.dto.PartidoPoliticoDTO;
 import com.mobyapp.segunda_evaluacion.model.Candidato;
-import com.mobyapp.segunda_evaluacion.model.PartidoPolitico;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

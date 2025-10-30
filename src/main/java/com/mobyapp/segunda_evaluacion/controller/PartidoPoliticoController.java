@@ -43,11 +43,7 @@ public class PartidoPoliticoController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @SuppressWarnings("java:S1130")
     public PartidoPoliticoDTO createPartidoPolitico (@Valid @RequestBody PartidoPolitico partidoPolitico) throws RecursoDuplicadoException {
-        // Tuve que ignorar la warning de Sonarqube: Se mantiene 'throws RecursoDuplicadoException' por requisito del compilador
-        // (Checked Exception). El error S1130 es un falso positivo, ya que la excepción es manejada
-        // globalmente por el @RestControllerAdvice, cumpliendo con la arquitectura REST/Spring.
         return service.savePartidoPolitico(partidoPolitico);
     }
 
