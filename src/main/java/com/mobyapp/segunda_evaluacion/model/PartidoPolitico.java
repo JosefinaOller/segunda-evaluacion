@@ -21,7 +21,7 @@ public class PartidoPolitico {
     private Long id;
 
     @NotBlank(message = "El nombre no puede estar vacío.")
-    @Size(min = 2, max = 30, message = "El nombre debe tener entre 2 y 30 caracteres.")
+    @Size(min = 2, max = 60, message = "El nombre debe tener entre 2 y 60 caracteres.")
     private String nombre;
 
     @NotBlank(message = "La sigla no puede estar vacía.")
