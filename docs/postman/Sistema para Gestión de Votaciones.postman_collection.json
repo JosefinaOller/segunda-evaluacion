@@ -5,7 +5,7 @@
 		"description": "# 🚀 Get started here\n\nThis template guides you through CRUD operations (GET, POST, PUT, DELETE), variables, and tests.\n\n## 🔖 **How to use this template**\n\n#### **Step 1: Send requests**\n\nRESTful APIs allow you to perform CRUD operations using the POST, GET, PUT, and DELETE HTTP methods.\n\nThis collection contains each of these [request](https://learning.postman.com/docs/sending-requests/requests/) types. Open each request and click \"Send\" to see what happens.\n\n#### **Step 2: View responses**\n\nObserve the response tab for status code (200 OK), response time, and size.\n\n#### **Step 3: Send new Body data**\n\nUpdate or add new data in \"Body\" in the POST request. Typically, Body data is also used in PUT request.\n\n```\n{\n    \"name\": \"Add your name in the body\"\n}\n\n ```\n\n#### **Step 4: Update the variable**\n\nVariables enable you to store and reuse values in Postman. We have created a [variable](https://learning.postman.com/docs/sending-requests/variables/) called `base_url` with the sample request [https://postman-api-learner.glitch.me](https://postman-api-learner.glitch.me). Replace it with your API endpoint to customize this collection.\n\n#### **Step 5: Add tests in the \"Scripts\" tab**\n\nAdding tests to your requests can help you confirm that your API is working as expected. You can write test scripts in JavaScript and view the output in the \"Test Results\" tab.\n\n<img src=\"https://content.pstmn.io/fa30ea0a-373d-4545-a668-e7b283cca343/aW1hZ2UucG5n\" alt=\"\" height=\"1530\" width=\"2162\">\n\n## 💪 Pro tips\n\n- Use folders to group related requests and organize the collection.\n    \n- Add more [scripts](https://learning.postman.com/docs/writing-scripts/intro-to-scripts/) to verify if the API works as expected and execute workflows.\n    \n\n## 💡Related templates\n\n[API testing basics](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=e9a37a28-055b-49cd-8c7e-97494a21eb54&sourceTemplateId=ddb19591-3097-41cf-82af-c84273e56719)  \n[API documentation](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=e9c28f47-1253-44af-a2f3-20dce4da1f18&sourceTemplateId=ddb19591-3097-41cf-82af-c84273e56719)  \n[Authorization methods](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=31a9a6ed-4cdf-4ced-984c-d12c9aec1c27&sourceTemplateId=ddb19591-3097-41cf-82af-c84273e56719)",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "47888248",
-		"_collection_link": "https://josefina-oller-s-team.postman.co/workspace/fe05731f-82f3-4757-89ae-a37b55b26b09/collection/47888248-8bec0947-f965-4230-9e9b-0fa8caa2f7b7?action=share&source=collection_link&creator=47888248"
+		"_collection_link": "https://josefina-oller-s-team.postman.co/workspace/Team-Workspace~fe05731f-82f3-4757-89ae-a37b55b26b09/collection/47888248-8bec0947-f965-4230-9e9b-0fa8caa2f7b7?action=share&source=collection_link&creator=47888248"
 	},
 	"item": [
 		{
@@ -60,7 +60,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"name\": \"Add your name in the body\"\n}",
+									"raw": "{\n    \"nombre\": \"Movimiento por la Armonia Digital\",\n    \"sigla\": \"MAD\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -77,10 +77,33 @@
 									]
 								}
 							},
+							"status": "Created",
+							"code": 201,
 							"_postman_previewlanguage": null,
-							"header": null,
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 30 Oct 2025 13:52:10 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=60"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
 							"cookie": [],
-							"body": null
+							"body": "{\n    \"nombre\": \"Movimiento por la Armonia Digital\",\n    \"sigla\": \"MAD\"\n}"
 						},
 						{
 							"name": "Union por la Argentina (UA)",
@@ -185,6 +208,58 @@
 							],
 							"cookie": [],
 							"body": "{\n    \"nombre\": \"Union por Messi\",\n    \"sigla\": \"UM\"\n}"
+						},
+						{
+							"name": "Partido Justicialista (PJ)",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"nombre\": \"Partido Justicialista\",\n    \"sigla\": \"PJ\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/partidos",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"partidos"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 30 Oct 2025 13:49:04 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=60"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"nombre\": \"Partido Justicialista\",\n    \"sigla\": \"PJ\"\n}"
 						}
 					]
 				},
@@ -249,7 +324,7 @@
 								},
 								{
 									"key": "Date",
-									"value": "Thu, 30 Oct 2025 02:35:07 GMT"
+									"value": "Thu, 30 Oct 2025 13:54:50 GMT"
 								},
 								{
 									"key": "Keep-Alive",
@@ -261,7 +336,7 @@
 								}
 							],
 							"cookie": [],
-							"body": "[\n    {\n        \"nombre\": \"Movimiento por la Armonia Digital\",\n        \"sigla\": \"MAD\"\n    },\n    {\n        \"nombre\": \"Union por la Argentina\",\n        \"sigla\": \"UA\"\n    },\n    {\n        \"nombre\": \"Union por Messi\",\n        \"sigla\": \"UM\"\n    }\n]"
+							"body": "[\n    {\n        \"nombre\": \"Movimiento por la Armonia Digital\",\n        \"sigla\": \"MAD\"\n    },\n    {\n        \"nombre\": \"Union por la Argentina\",\n        \"sigla\": \"UA\"\n    },\n    {\n        \"nombre\": \"Union por Messi\",\n        \"sigla\": \"UM\"\n    },\n    {\n        \"nombre\": \"Partido Justicialista\",\n        \"sigla\": \"PJ\"\n    }\n]"
 						}
 					]
 				},
@@ -460,7 +535,7 @@
 					},
 					"response": [
 						{
-							"name": "Eliminar UA con su ID",
+							"name": "Eliminar Partido Justicialista con su ID",
 							"originalRequest": {
 								"method": "DELETE",
 								"header": [],
@@ -474,13 +549,13 @@
 									}
 								},
 								"url": {
-									"raw": "{{base_url}}/partidos/2",
+									"raw": "{{base_url}}/partidos/4",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"partidos",
-										"2"
+										"4"
 									]
 								}
 							},
@@ -490,7 +565,7 @@
 							"header": [
 								{
 									"key": "Date",
-									"value": "Thu, 30 Oct 2025 02:38:50 GMT"
+									"value": "Thu, 30 Oct 2025 13:53:11 GMT"
 								},
 								{
 									"key": "Keep-Alive",
