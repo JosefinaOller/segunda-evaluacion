@@ -80,9 +80,9 @@ docs/postman/Sistema para Gestión de Votaciones.postman_collection
 
 | Recurso | Método | Ruta | Descripción |
 |---------|--------|------|-------------|
-| Partidos Políticos | POST / GET / PUT / DELETE | `/api/partidos` | Gestión completa de partidos políticos |
-| Candidatos | POST / GET / PUT / DELETE | `/api/candidatos` | Gestión completa de candidatos |
-| Votos (Registro) | POST | `/api/votos/registrar` | Registra un voto para un candidato específico |
+| Partidos Políticos | POST / GET / DELETE | `/api/partidos` | Gestión completa de partidos políticos |
+| Candidatos | POST / GET / DELETE | `/api/candidatos` | Gestión completa de candidatos |
+| Votos (Registro) | POST | `/api/votos` | Registra un voto para un candidato específico |
 | Votos (Consulta) | GET | `/api/votos/candidato/{id}` | Consulta total de votos por candidato |
 | Votos (Consulta) | GET | `/api/votos/partido/{id}` | Consulta total de votos por partido |
 
