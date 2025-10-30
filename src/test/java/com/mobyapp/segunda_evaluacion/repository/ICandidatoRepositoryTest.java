@@ -28,10 +28,7 @@ class ICandidatoRepositoryTest {
     @BeforeEach
     void setup() {
         partidoPolitico = new PartidoPolitico(null,"Partido de Libertad","PL");
-
-        entityManager.persist(partidoPolitico);
-
-        entityManager.flush();
+        entityManager.persistAndFlush(partidoPolitico);
     }
 
     @Test
@@ -84,5 +81,25 @@ class ICandidatoRepositoryTest {
 
         Optional<Candidato> result = candidatoRepository.findById(idToDelete);
         assertTrue(result.isEmpty(), "El candidato debe haber sido eliminado.");
+    }
+
+    @Test
+    @DisplayName("Debe encontrar un Candidato por Nombre Completo y Partido")
+    void findByNombreCompletoAndPartido_ExistingCandidato_ReturnsCandidato() {
+        Candidato existingCandidato = new Candidato(null,"Ángel Di María", partidoPolitico);
+        entityManager.persistAndFlush(existingCandidato);
+
+        Optional<Candidato> result = candidatoRepository.findByNombreCompletoAndPartido("Ángel Di María", partidoPolitico);
+
+        assertTrue(result.isPresent(), "Se debe encontrar el candidato existente.");
+        assertEquals(existingCandidato.getId(), result.get().getId(),"El ID debe ser generado por JPA.");
+    }
+
+    @Test
+    @DisplayName("Debe retornar vacío si el Candidato por Nombre Completo y Partido no existe")
+    void findByNombreCompletoAndPartido_NonExistingCandidato_ReturnsEmpty() {
+        Optional<Candidato> result = candidatoRepository.findByNombreCompletoAndPartido("Candidato Inexistente", partidoPolitico);
+
+        assertTrue(result.isEmpty(), "Debe retornar vacío si el candidato no existe.");
     }
 }

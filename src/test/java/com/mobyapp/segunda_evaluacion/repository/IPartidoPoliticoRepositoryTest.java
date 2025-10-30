@@ -72,4 +72,24 @@ class IPartidoPoliticoRepositoryTest {
         assertTrue(result.isEmpty(), "El partido debe haber sido eliminado.");
     }
 
+    @Test
+    @DisplayName("Debe encontrar un PartidoPolitico por Nombre y Sigla")
+    void findByNombreAndSigla_ExistingPartido_ReturnsPartido() {
+        PartidoPolitico partidoToPersist = new PartidoPolitico(null, "Partido para la Unidad", "PPU");
+        PartidoPolitico persistedPartidoPolitico = entityManager.persistAndFlush(partidoToPersist);
+
+        Optional<PartidoPolitico> result = partidoPoliticoRepository.findByNombreAndSigla("Partido para la Unidad", "PPU");
+
+        assertTrue(result.isPresent(), "Se debe encontrar el partido que coincide con Nombre y Sigla.");
+        assertEquals(persistedPartidoPolitico.getId(), result.get().getId(),"El ID debe ser generado por JPA.");
+    }
+
+    @Test
+    @DisplayName("Debe retornar vacío si no existe un PartidoPolitico con el Nombre y Sigla dados")
+    void findByNombreAndSigla_NonExistingPartido_ReturnsEmpty() {
+        Optional<PartidoPolitico> result = partidoPoliticoRepository.findByNombreAndSigla("Partido Inexistente", "INEX");
+
+        assertTrue(result.isEmpty(), "Debe retornar vacío si el partido no coincide.");
+    }
+
 }
