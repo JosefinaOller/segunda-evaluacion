@@ -1,6 +1,9 @@
 package com.mobyapp.segunda_evaluacion.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mobyapp.segunda_evaluacion.dto.CandidatoDTO;
+import com.mobyapp.segunda_evaluacion.dto.PartidoPoliticoDTO;
+import com.mobyapp.segunda_evaluacion.exception.RecursoDuplicadoException;
 import com.mobyapp.segunda_evaluacion.exception.RecursoNoEncontradoException;
 import com.mobyapp.segunda_evaluacion.model.Candidato;
 import com.mobyapp.segunda_evaluacion.model.PartidoPolitico;
@@ -38,69 +41,100 @@ class CandidatoControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private Candidato candidato;
-    private PartidoPolitico partido;
+    private Candidato candidatoEntity;
+    private PartidoPolitico partidoEntity;
+    private CandidatoDTO candidatoDTO;
+    private PartidoPoliticoDTO partidoDTOMock;
 
     @BeforeEach
     void setUp() {
-        partido = new PartidoPolitico(1L, "Unidos por Messi", "UM");
-        candidato = new Candidato(1L,"Angel di Maria", partido);
+        partidoEntity = new PartidoPolitico(1L, "Unidos por Messi", "UM");
+        candidatoEntity = new Candidato(1L,"Angel di Maria", partidoEntity);
+        partidoDTOMock = new PartidoPoliticoDTO("Unidos por Messi", "UM");
+        candidatoDTO = new CandidatoDTO("Angel di Maria", partidoDTOMock);
     }
 
     @Test
-    @DisplayName("POST - Debe crear un candidato y retornar el mismo creado")
+    @DisplayName("POST - Debe crear un candidato y retornar el DTO creado con 201 Created")
     void postCandidato_SavesSuccessfully_Returns201Created() throws Exception {
-        given(service.saveCandidato(any(Candidato.class))).willReturn(candidato);
+        given(service.saveCandidato(any(Candidato.class))).willReturn(candidatoDTO);
 
         ResultActions response = mockMvc.perform(post("/api/candidatos")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(candidato)));
+                .content(objectMapper.writeValueAsString(candidatoEntity)));
 
         response.andDo(print())
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.nombreCompleto", is(candidato.getNombreCompleto())))
-                .andExpect(jsonPath("$.partido.nombre", is(partido.getNombre())));
+                .andExpect(jsonPath("$.nombreCompleto", is(candidatoDTO.getNombreCompleto())))
+                .andExpect(jsonPath("$.partido.nombre", is(partidoDTOMock.getNombre())));
+
+        verify(service, times(1)).saveCandidato(any(Candidato.class));
     }
 
     @Test
-    @DisplayName("GET - Debe retornar una lista de candidatos")
-    void getCandidatos_ReturnsListOfCandidatos_Returns200OK() throws Exception {
-        Candidato candidato2 = new Candidato(2L, "Rodrigo de Paul", partido);
-        List<Candidato> candidatos = Arrays.asList(candidato, candidato2);
-        given(service.getCandidatos()).willReturn(candidatos);
+    @DisplayName("POST - Debe retornar 409 CONFLICT si el Candidato ya existe (duplicado)")
+    void postCandidato_IsDuplicate_Returns409Conflict() throws Exception {
+        given(service.saveCandidato(any(Candidato.class)))
+                .willThrow(new RecursoDuplicadoException("Ya existe un candidato registrado."));
+
+        mockMvc.perform(post("/api/candidatos")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(candidatoEntity)))
+                .andDo(print())
+                .andExpect(status().isConflict());
+
+        verify(service, times(1)).saveCandidato(any(Candidato.class));
+    }
+
+    @Test
+    @DisplayName("POST - Debe retornar 404 NOT FOUND si el Partido Político en el Candidato no existe")
+    void createCandidato_PartyDoesNotExist_Returns404NotFound() throws Exception {
+        Candidato candidatoInvalido = new Candidato(null, "Candidato sin Partido", new PartidoPolitico(99L, "Inválido", "INV"));
+
+        given(service.saveCandidato(any(Candidato.class)))
+                .willThrow(new RecursoNoEncontradoException("Partido Político con ID 99 no encontrado"));
+
+        mockMvc.perform(post("/api/candidatos")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(candidatoInvalido)))
+                .andDo(print())
+                .andExpect(status().isNotFound());
+
+        verify(service, times(1)).saveCandidato(any(Candidato.class));
+    }
+
+    @Test
+    @DisplayName("GET - Debe retornar una lista de DTOs de candidatos con 200 OK")
+    void getCandidatos_ReturnsListOfCandidatoDTOs_Returns200OK() throws Exception {
+        CandidatoDTO candidatoDTO2 = new CandidatoDTO("Rodrigo de Paul", partidoDTOMock);
+        List<CandidatoDTO> candidatosDTOs = Arrays.asList(candidatoDTO, candidatoDTO2);
+
+        given(service.getCandidatos()).willReturn(candidatosDTOs);
 
         ResultActions response = mockMvc.perform(get("/api/candidatos"));
 
         response.andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()", is(candidatos.size())))
-                .andExpect(jsonPath("$[0].nombreCompleto", is(candidato.getNombreCompleto())))
-                .andExpect(jsonPath("$[1].nombreCompleto", is(candidato2.getNombreCompleto())));
+                .andExpect(jsonPath("$.size()", is(candidatosDTOs.size())))
+                .andExpect(jsonPath("$[0].nombreCompleto", is(candidatoDTO.getNombreCompleto())))
+                .andExpect(jsonPath("$[1].nombreCompleto", is(candidatoDTO2.getNombreCompleto())));
+
+        verify(service, times(1)).getCandidatos();
     }
 
     @Test
-    @DisplayName("GET - Debe buscar el candidato por ID y retornar el mismo")
+    @DisplayName("GET - Debe buscar el candidato por ID y retornar el DTO con 200 OK")
     void getCandidatoById_ExistingId_Returns200OK() throws Exception {
         Long candidatoId = 1L;
-        given(service.findCandidatoById(candidatoId)).willReturn(candidato);
+        given(service.findCandidatoById(candidatoId)).willReturn(candidatoDTO);
 
         ResultActions response = mockMvc.perform(get("/api/candidatos/{id}", candidatoId));
 
         response.andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.nombreCompleto", is(candidato.getNombreCompleto())));
-    }
+                .andExpect(jsonPath("$.nombreCompleto", is(candidatoDTO.getNombreCompleto())));
 
-    @Test
-    @DisplayName("DELETE - Debe eliminar el candidato por ID")
-    void deleteCandidatoById_DeletesSuccessfully_Returns204NoContent() throws Exception {
-        Long candidatoId = 1L;
-        willDoNothing().given(service).deleteCandidato(candidatoId);
-
-        ResultActions response = mockMvc.perform(delete("/api/candidatos/{id}", candidatoId));
-
-        response.andDo(print())
-                .andExpect(status().isNoContent());
+        verify(service, times(1)).findCandidatoById(candidatoId);
     }
 
     @Test
@@ -119,6 +153,19 @@ class CandidatoControllerTest {
     }
 
     @Test
+    @DisplayName("DELETE - Debe eliminar el candidato por ID y retornar 204 No Content")
+    void deleteCandidatoById_DeletesSuccessfully_Returns204NoContent() throws Exception {
+        Long candidatoId = 1L;
+        willDoNothing().given(service).deleteCandidato(candidatoId);
+
+        mockMvc.perform(delete("/api/candidatos/{id}", candidatoId))
+                .andDo(print())
+                .andExpect(status().isNoContent());
+
+        verify(service, times(1)).deleteCandidato(candidatoId);
+    }
+
+    @Test
     @DisplayName("DELETE - Debe retornar 404 NOT FOUND si el candidato a eliminar no existe")
     void deleteCandidatoById_NonExistentId_Returns404NotFound() throws Exception {
         Long nonExistentId = 99L;
@@ -131,22 +178,5 @@ class CandidatoControllerTest {
                 .andExpect(status().isNotFound());
 
         verify(service, times(1)).deleteCandidato(nonExistentId);
-    }
-
-    @Test
-    @DisplayName("POST - Debe retornar 404 NOT FOUND si el Partido Político en el Candidato no existe")
-    void createCandidato_PartyDoesNotExist_Returns404NotFound() throws Exception {
-        Candidato candidatoInvalido = new Candidato(null, "Candidato sin Partido", new PartidoPolitico(99L, "Inválido", "INV"));
-
-        given(service.saveCandidato(any(Candidato.class)))
-                .willThrow(new RecursoNoEncontradoException("Partido Político con ID 99 no encontrado"));
-
-        mockMvc.perform(post("/api/candidatos")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(candidatoInvalido)))
-                .andDo(print())
-                .andExpect(status().isNotFound());
-
-        verify(service, times(1)).saveCandidato(any(Candidato.class));
     }
 }

@@ -1,6 +1,8 @@
 package com.mobyapp.segunda_evaluacion.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mobyapp.segunda_evaluacion.dto.PartidoPoliticoDTO;
+import com.mobyapp.segunda_evaluacion.exception.RecursoDuplicadoException;
 import com.mobyapp.segunda_evaluacion.exception.RecursoNoEncontradoException;
 import com.mobyapp.segunda_evaluacion.model.PartidoPolitico;
 import com.mobyapp.segunda_evaluacion.service.IPartidoPoliticoService;
@@ -38,35 +40,54 @@ class PartidoPoliticoControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private PartidoPolitico partido;
+    private PartidoPolitico partidoEntity;
+    private PartidoPoliticoDTO partidoDTO;
+
     private final Long idExisted = 1L;
     private final Long idNotExisted = 99L;
 
     @BeforeEach
     void setUp() {
-        partido = new PartidoPolitico(1L, "Unidos por Messi", "UM");
+        partidoDTO = new PartidoPoliticoDTO("Unidos por Messi", "UM");
+        partidoEntity = new PartidoPolitico(idExisted, "Unidos por Messi", "UM");
     }
 
     @Test
-    @DisplayName("POST - Debe crear un partido politico y retornar el mismo creado")
+    @DisplayName("POST - Debe crear un partido politico y retornar el DTO creado con 201 Created")
     void postPartidoPolitico_SavesSuccessfully_Returns201Created() throws Exception {
-        given(service.savePartidoPolitico(any(PartidoPolitico.class))).willReturn(partido);
+        given(service.savePartidoPolitico(any(PartidoPolitico.class))).willReturn(partidoDTO);
 
         ResultActions response = mockMvc.perform(post("/api/partidos")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(partido)));
+                .content(objectMapper.writeValueAsString(partidoEntity)));
 
         response.andDo(print())
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.nombre", is(partido.getNombre())))
-                .andExpect(jsonPath("$.sigla", is(partido.getSigla())));
+                .andExpect(jsonPath("$.nombre", is(partidoDTO.getNombre())))
+                .andExpect(jsonPath("$.sigla", is(partidoDTO.getSigla())));
+
+        verify(service, times(1)).savePartidoPolitico(any(PartidoPolitico.class));
     }
 
     @Test
-    @DisplayName("GET - Debe retornar una lista de partidos politicos")
+    @DisplayName("POST - Debe retornar 409 Conflict si el partido politico ya existe (RecursoDuplicadoException)")
+    void postPartidoPolitico_DuplicateResource_Returns409Conflict() throws Exception {
+        given(service.savePartidoPolitico(any(PartidoPolitico.class)))
+                .willThrow(new RecursoDuplicadoException("El Partido Politico ya existe"));
+
+        mockMvc.perform(post("/api/partidos")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(partidoEntity)))
+                .andDo(print())
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    @DisplayName("GET - Debe retornar una lista de partidos politicos con 200 OK")
     void getPartidosPoliticos_ReturnsListOfPartidos_Returns200OK() throws Exception {
-        PartidoPolitico partido2 = new PartidoPolitico(2L,"Unidos por la Argentina", "UPLA");
-        List<PartidoPolitico> partidos = Arrays.asList(partido, partido2);
+        PartidoPoliticoDTO partidoDTO2 = new PartidoPoliticoDTO("Unidos por la Argentina", "UPLA");
+        List<PartidoPoliticoDTO> partidos = Arrays.asList(partidoDTO, partidoDTO2);
+
         given(service.getPartidosPoliticos()).willReturn(partidos);
 
         ResultActions response = mockMvc.perform(get("/api/partidos"));
@@ -74,31 +95,20 @@ class PartidoPoliticoControllerTest {
         response.andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.size()", is(partidos.size())))
-                .andExpect(jsonPath("$[0].nombre", is(partido.getNombre())))
-                .andExpect(jsonPath("$[1].nombre", is(partido2.getNombre())));
+                .andExpect(jsonPath("$[0].nombre", is(partidoDTO.getNombre())))
+                .andExpect(jsonPath("$[1].nombre", is(partidoDTO2.getNombre())));
     }
 
     @Test
-    @DisplayName("GET - Debe buscar el candidato por ID y retornar el mismo")
+    @DisplayName("GET - Debe buscar el partido por ID y retornar el DTO con 200 OK")
     void getPartidoPoliticoById_ExistingId_Returns200OK() throws Exception {
-        given(service.findPartidoPoliticoById(idExisted)).willReturn(partido);
+        given(service.findPartidoPoliticoById(idExisted)).willReturn(partidoDTO);
 
         ResultActions response = mockMvc.perform(get("/api/partidos/{id}", idExisted));
 
         response.andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.nombre", is(partido.getNombre())));
-    }
-
-    @Test
-    @DisplayName("DELETE - Debe eliminar el candidato por ID")
-    void deletePartidoPoliticoById_DeletesSuccessfully_Returns204NoContent() throws Exception {
-        willDoNothing().given(service).deletePartidoPolitico(idExisted);
-
-        ResultActions response = mockMvc.perform(delete("/api/partidos/{id}", idExisted));
-
-        response.andDo(print())
-                .andExpect(status().isNoContent());
+                .andExpect(jsonPath("$.nombre", is(partidoDTO.getNombre())));
     }
 
     @Test
@@ -112,6 +122,19 @@ class PartidoPoliticoControllerTest {
                 .andExpect(status().isNotFound());
 
         verify(service, times(1)).findPartidoPoliticoById(idNotExisted);
+    }
+
+    @Test
+    @DisplayName("DELETE - Debe eliminar el partido por ID y retornar 204 No Content")
+    void deletePartidoPoliticoById_DeletesSuccessfully_Returns204NoContent() throws Exception {
+        willDoNothing().given(service).deletePartidoPolitico(idExisted);
+
+        ResultActions response = mockMvc.perform(delete("/api/partidos/{id}", idExisted));
+
+        response.andDo(print())
+                .andExpect(status().isNoContent());
+
+        verify(service, times(1)).deletePartidoPolitico(idExisted);
     }
 
     @Test
