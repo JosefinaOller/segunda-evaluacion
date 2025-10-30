@@ -37,7 +37,7 @@ public class PartidoPoliticoController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Partido creado exitosamente.",
                     content = @Content(schema = @Schema(implementation = PartidoPoliticoDTO.class))),
-            @ApiResponse(responseCode = "409", description = "Partido duplicado (ya existe un partido con el mismo nombre o sigla)."), // Agregado para RecursoDuplicadoException
+            @ApiResponse(responseCode = "409", description = "Partido duplicado (ya existe un partido con el mismo nombre o sigla)."),
             @ApiResponse(responseCode = "400", description = "Solicitud inválida (ej. datos faltantes o incorrectos).")
     })
 

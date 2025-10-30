@@ -38,7 +38,7 @@ public class CandidatoController {
             @ApiResponse(responseCode = "201", description = "Candidato creado exitosamente.",
                     content = @Content(schema = @Schema(implementation = CandidatoDTO.class))),
             @ApiResponse(responseCode = "404", description = "Partido Político no encontrado para el candidato."),
-            @ApiResponse(responseCode = "409", description = "Candidato duplicado (por ejemplo, ya existe un DNI registrado)."), // Agregado para RecursoDuplicadoException
+            @ApiResponse(responseCode = "409", description = "Candidato duplicado (por ejemplo, ya existe un DNI registrado)."),
             @ApiResponse(responseCode = "400", description = "Datos de candidato inválidos.")
     })
 
